@@ -24,7 +24,7 @@ class Compressor:
             "V_FPS_FLAG": "-r",
             "video_output_fps": "30",
             "V_BITRATE_FLAG": "-b:v",
-            "video_output_bitrate": "150k",
+            "video_output_bitrate": "300k",
             "A_CODEC_FLAG": "-acodec",
             "audio_codec": "aac",
             "A_BITRATE_FLAG": "-b:a",
@@ -32,13 +32,18 @@ class Compressor:
             "output_path": None
         }
 
-    def run(self, input_video_path, output_video_dir):
+    def run(self, input_video_path, output_video_dir=None):
         """
         :param input_video_path: original video file
         :param output_video_dir: directory for compressed video output
         """
+        assert input_video_path is not None
+        default_output_dir = os.path.dirname(input_video_path)
         filename, _ = os.path.splitext(os.path.basename(input_video_path))
-        output_video_path = output_video_dir + f"{filename}_.mp4"
+        if output_video_dir is None:
+            output_video_path = default_output_dir + f"{filename}_.mp4"
+        else:
+            output_video_path = output_video_dir + f"{filename}_.mp4"
         self.cmd_args["input_path"] = input_video_path
         self.cmd_args["output_path"] = output_video_path
         has_video_stream: bool = False
@@ -48,12 +53,15 @@ class Compressor:
                 has_video_stream = True
             elif stream["codec_type"] == "audio":
                 has_audio_stream = True
-        cmd_args = [val for val in self.cmd_args.values()]
-        # TODO: If no video/audio stream exists in input file, relevant args should be removed.
-        if not has_video_stream:
-            pass
-        if not has_audio_stream:
-            pass
+
+        if has_video_stream and has_audio_stream:
+            cmd_args = [val for val in self.cmd_args.values()]
+        elif not has_video_stream and has_audio_stream:
+            cmd_args = [val for key, val in self.cmd_args.items() if not ("V_" in key or "video_" in key)]
+        elif not has_audio_stream and has_video_stream:
+            cmd_args = [val for key, val in self.cmd_args.items() if not ("A_" in key or "audio_" in key)]
+        else:
+            raise RuntimeError("No video or audio stream detected in input file.")
         res = subprocess.run(args=cmd_args,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
@@ -63,4 +71,4 @@ class Compressor:
 
 
 if __name__ == "__main__":
-    Compressor().run("example.mp4", "")
+    Compressor().run("example.mp4")
