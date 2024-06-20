@@ -62,6 +62,7 @@ class Compressor:
             cmd_args = [val for key, val in self.cmd_args.items() if not ("A_" in key or "audio_" in key)]
         else:
             raise RuntimeError("No video or audio stream detected in input file.")
+
         res = subprocess.run(args=cmd_args,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
