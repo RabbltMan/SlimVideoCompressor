@@ -8,23 +8,22 @@ class MediaFileInfo:
     """
 
     def __init__(self, input_file_path: str):
+        # String-type stream keywords
         self.S_STREAM_KEYWORDS = (
             "codec_name",
             "codec_type",
         )
-        self.F_STREAM_KEYWORDS = (
-            "width",
-            "height",
-            "bit_rate",
-            "r_frame_rate",
-            "sample_rate"
-        )
+        # Float-type stream keywords
+        self.F_STREAM_KEYWORDS = ("width", "height", "start_time", "duration",
+                                  "bit_rate", "r_frame_rate", "sample_rate")
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.ffprobe_path = os.path.join(self.current_dir, 'bin', 'ffprobe.exe')
+        self.ffprobe_path = os.path.join(self.current_dir, 'bin',
+                                         'ffprobe.exe')
         self.input_path = input_file_path
         self.streams = self.get_stream_info()
 
     def get_stream_info(self):
+        # Get stream info via ffprobe
         res = subprocess.run(
             args=[self.ffprobe_path, '-i', self.input_path, "-show_streams"],
             stdout=subprocess.PIPE,
@@ -32,11 +31,16 @@ class MediaFileInfo:
             universal_newlines=True)
         streams = []
         stream_info = res.stdout.split('\n')
-        assert (stream_info[0] == "[STREAM]" and stream_info[-2] == "[/STREAM]")
+
+        assert (stream_info[0] == "[STREAM]"
+                and stream_info[-2] == "[/STREAM]")
+        # Stream info parser
         for line in stream_info:
+            # upcoming new stream
             if "[STREAM]" in line:
                 streams.append(dict())
                 continue
+            # properties of current stream
             if "=" in line:
                 item, val = line.split("=")
                 if item in self.S_STREAM_KEYWORDS:
