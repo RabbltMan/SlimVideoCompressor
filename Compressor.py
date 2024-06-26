@@ -2,13 +2,18 @@ import os
 import re
 import subprocess
 from time import sleep
+from typing import Literal
 
 from MediaFileInfo import MediaFileInfo
 
 
 class Compressor:
 
-    def __init__(self):
+    def __init__(self,
+                 input_video_path,
+                 output_video_dir=None,
+                 use_hevc=False):
+        self.media_file_info = None
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.ffmpeg_path = os.path.join(self.current_dir, 'bin', 'ffmpeg.exe')
         self.cmd_args = {
@@ -33,48 +38,68 @@ class Compressor:
             "audio_output_bitrate": "48k",
             "output_path": None
         }
+        # Apply HEVC Encoder for output video
+        if use_hevc:
+            self.cmd_args["video_codec"] = "libx265"
 
-    def modify_adaptive_args(self, media_file_info):
+        self.update_path(input_video_path, output_video_dir)
+
+    def update_path(self, _input_video_path, _output_video_dir):
+        """
+        Update path arguments
+        :param _input_video_path: original video file
+        :param _output_video_dir: directory for compressed video output
+        """
+        assert _input_video_path is not None
+        default_output_dir = os.path.dirname(_input_video_path)
+        filename, _ = os.path.splitext(os.path.basename(_input_video_path))
+
+        if _output_video_dir is None:
+            output_video_path = default_output_dir + f"{filename}_.mp4"
+        else:
+            output_video_path = _output_video_dir + f"{filename}_.mp4"
+
+        self.cmd_args["input_path"] = _input_video_path
+        self.cmd_args["output_path"] = output_video_path
+        self.media_file_info: MediaFileInfo = MediaFileInfo(_input_video_path)
+        print(self.media_file_info.__dict__)
+
+    def modify_adaptive_args(self, _qos):
         """
         Modify adaptive compressor args (e.g. `resolution`, `bitrate`, etc.)
         """
-        pass
-
-    def run(self, input_video_path, output_video_dir=None):
-        """
-        :param input_video_path: original video file
-        :param output_video_dir: directory for compressed video output
-        """
-        assert input_video_path is not None
-        default_output_dir = os.path.dirname(input_video_path)
-        filename, _ = os.path.splitext(os.path.basename(input_video_path))
-
-        if output_video_dir is None:
-            output_video_path = default_output_dir + f"{filename}_.mp4"
+        # calculate aspect ratio -> output resolution
+        act_ratio = self.media_file_info.width / self.media_file_info.height
+        COMMON_RATIO = [9 / 16, 3 / 4, 1, 4 / 3, 16 / 9, 21 / 9]
+        if act_ratio < 1:
+            QOS_MAP = {
+                0: (int(min(360, self.media_file_info.height)), "24"),
+                1: (int(min(480, self.media_file_info.height)), "30"),
+                2: (int(min(720, self.media_file_info.height)), "60")
+            }
         else:
-            output_video_path = output_video_dir + f"{filename}_.mp4"
+            QOS_MAP = {
+                0: (int(min(360, self.media_file_info.width)), "24"),
+                1: (int(min(480, self.media_file_info.width)), "30"),
+                2: (int(min(720, self.media_file_info.width)), "60")
+            }
+        _, act_ratio = sorted([(abs(act_ratio - r), r)
+                               for r in COMMON_RATIO])[0]
+        act_w = QOS_MAP[_qos][0]
+        act_h = int(act_w / act_ratio)
+        self.cmd_args["video_output_res"] = f"{act_w}x{act_h}"
+        self.cmd_args["r_frame_rate"] = QOS_MAP[_qos][1]
+        # calculate optimized video bit rate
+        opt_bitrate = min(self.media_file_info.bitrate // 2, 200_000,
+                          (act_w * act_h * 1.5 * (_qos + 2)))
+        self.cmd_args["video_output_bitrate"] = f"{opt_bitrate}"
 
-        self.cmd_args["input_path"] = input_video_path
-        self.cmd_args["output_path"] = output_video_path
-
-        media_file_info = MediaFileInfo(input_video_path)
-        self.modify_adaptive_args(media_file_info)
-
+    def run(self, qos: Literal[0, 1, 2] = 0):
+        self.modify_adaptive_args(qos)
         # Check stream existence and property
-        has_video_stream: bool = False
-        has_audio_stream: bool = False
-        total_duration = 0.0
-
-        for stream in media_file_info.streams:
-            # check stream existence
-            if stream["codec_type"] == "video":
-                has_video_stream = True
-            elif stream["codec_type"] == "audio":
-                has_audio_stream = True
-            # calculate media file duration
-            total_duration = max(total_duration,
-                                 stream["start_time"] + stream["duration"])
-
+        has_video_stream: bool = self.media_file_info.has_video_stream
+        has_audio_stream: bool = self.media_file_info.has_audio_stream
+        total_duration = self.media_file_info.total_duration
         # delete args if relevant stream not exist
         if has_video_stream and has_audio_stream:
             cmd_args = [val for val in self.cmd_args.values()]
@@ -104,7 +129,7 @@ class Compressor:
                 # print(line, end='')
                 # `Lsize=` occur when compression process done
                 if "Lsize=" in line:
-                    sleep(5)
+                    sleep(3)
                     res.terminate()
                     print("100")
                     break
@@ -117,4 +142,4 @@ class Compressor:
 
 
 if __name__ == "__main__":
-    Compressor().run("example2.mp4")
+    Compressor("example2.mp4").run()

@@ -17,9 +17,15 @@ class MediaFileInfo:
         self.F_STREAM_KEYWORDS = ("width", "height", "start_time", "duration",
                                   "bit_rate", "r_frame_rate", "sample_rate")
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.ffprobe_path = os.path.join(self.current_dir, 'bin',
-                                         'ffprobe.exe')
+        self.ffprobe_path = os.path.join(self.current_dir, "bin",
+                                         "ffprobe.exe")
         self.input_path = input_file_path
+        self.width = 0.0
+        self.height = 1e-5
+        self.total_duration = 0.0
+        self.bitrate = 0
+        self.has_audio_stream = False
+        self.has_video_stream = False
         self.streams = self.get_stream_info()
 
     def get_stream_info(self):
@@ -40,6 +46,20 @@ class MediaFileInfo:
             if "[STREAM]" in line:
                 streams.append(dict())
                 continue
+            # get stream attributes at stream end tag
+            if "[/STREAM]" in line:
+                # Calculate duration
+                self.total_duration = max(
+                    self.total_duration,
+                    streams[-1]["start_time"] + streams[-1]["duration"])
+                if streams[-1]["codec_type"] == "video":
+                    self.has_video_stream = True
+                    self.width = max(streams[-1]["width"], self.width)
+                    self.height = max(streams[-1]["height"], self.height)
+                    self.bitrate = max(streams[-1]["bit_rate"], self.bitrate)
+                elif streams[-1]["codec_type"] == "audio":
+                    self.has_audio_stream = True
+
             # properties of current stream
             if "=" in line:
                 item, val = line.split("=")
