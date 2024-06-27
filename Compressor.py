@@ -70,7 +70,6 @@ class Compressor:
             output_video_path = default_output_dir + "\\" + f"{filename}_{gen_suffix()}.mp4"
         else:
             output_video_path = _output_video_dir + "\\" + f"{filename}_{gen_suffix()}.mp4"
-        print(_input_video_path, output_video_path)
         self.cmd_args["input_path"] = _input_video_path
         self.cmd_args["output_path"] = output_video_path
         self.media_file_info: MediaFileInfo = MediaFileInfo(_input_video_path)

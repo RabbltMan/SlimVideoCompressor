@@ -46,11 +46,12 @@ Partial Class Form1
         MaterialDrawer1.HighlightWithAccent = True
         MaterialDrawer1.IndicatorWidth = 0
         MaterialDrawer1.IsOpen = False
-        MaterialDrawer1.Location = New Point(-250, 0)
+        MaterialDrawer1.Location = New Point(-321, 0)
+        MaterialDrawer1.Margin = New Padding(4)
         MaterialDrawer1.MouseState = MaterialSkin.MouseState.HOVER
         MaterialDrawer1.Name = "MaterialDrawer1"
         MaterialDrawer1.ShowIconsWhenHidden = False
-        MaterialDrawer1.Size = New Size(250, 120)
+        MaterialDrawer1.Size = New Size(321, 141)
         MaterialDrawer1.TabIndex = 13
         MaterialDrawer1.UseColors = False
         ' 
@@ -63,8 +64,8 @@ Partial Class Form1
         RunButton.Enabled = False
         RunButton.HighEmphasis = True
         RunButton.Icon = Nothing
-        RunButton.Location = New Point(491, 290)
-        RunButton.Margin = New Padding(4, 6, 4, 6)
+        RunButton.Location = New Point(631, 341)
+        RunButton.Margin = New Padding(5, 7, 5, 7)
         RunButton.MouseState = MaterialSkin.MouseState.HOVER
         RunButton.Name = "RunButton"
         RunButton.NoAccentTextColor = Color.Empty
@@ -84,12 +85,12 @@ Partial Class Form1
         OutputSelectButton.Depth = 0
         OutputSelectButton.HighEmphasis = True
         OutputSelectButton.Icon = Nothing
-        OutputSelectButton.Location = New Point(531, 155)
-        OutputSelectButton.Margin = New Padding(4, 6, 4, 6)
+        OutputSelectButton.Location = New Point(683, 182)
+        OutputSelectButton.Margin = New Padding(5, 7, 5, 7)
         OutputSelectButton.MouseState = MaterialSkin.MouseState.HOVER
         OutputSelectButton.Name = "OutputSelectButton"
         OutputSelectButton.NoAccentTextColor = Color.Empty
-        OutputSelectButton.Size = New Size(100, 50)
+        OutputSelectButton.Size = New Size(129, 59)
         OutputSelectButton.TabIndex = 7
         OutputSelectButton.Text = "Select Path"
         OutputSelectButton.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained
@@ -105,12 +106,12 @@ Partial Class Form1
         InputSelectButton.Depth = 0
         InputSelectButton.HighEmphasis = True
         InputSelectButton.Icon = Nothing
-        InputSelectButton.Location = New Point(531, 88)
-        InputSelectButton.Margin = New Padding(4, 6, 4, 6)
+        InputSelectButton.Location = New Point(683, 104)
+        InputSelectButton.Margin = New Padding(5, 7, 5, 7)
         InputSelectButton.MouseState = MaterialSkin.MouseState.HOVER
         InputSelectButton.Name = "InputSelectButton"
         InputSelectButton.NoAccentTextColor = Color.Empty
-        InputSelectButton.Size = New Size(100, 50)
+        InputSelectButton.Size = New Size(129, 59)
         InputSelectButton.TabIndex = 8
         InputSelectButton.Text = "Select Path"
         InputSelectButton.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained
@@ -126,12 +127,13 @@ Partial Class Form1
         InputPathEntry.Font = New Font("Roboto", 16.0F, FontStyle.Regular, GraphicsUnit.Pixel)
         InputPathEntry.Hint = "Input File Path"
         InputPathEntry.LeadingIcon = Nothing
-        InputPathEntry.Location = New Point(22, 88)
-        InputPathEntry.MaxLength = 50
+        InputPathEntry.Location = New Point(28, 104)
+        InputPathEntry.Margin = New Padding(4)
+        InputPathEntry.MaxLength = 250
         InputPathEntry.MouseState = MaterialSkin.MouseState.OUT
         InputPathEntry.Multiline = False
         InputPathEntry.Name = "InputPathEntry"
-        InputPathEntry.Size = New Size(502, 50)
+        InputPathEntry.Size = New Size(645, 50)
         InputPathEntry.TabIndex = 9
         InputPathEntry.Text = ""
         InputPathEntry.TrailingIcon = Nothing
@@ -145,12 +147,13 @@ Partial Class Form1
         OutputDirEntry.Font = New Font("Roboto", 16.0F, FontStyle.Regular, GraphicsUnit.Pixel)
         OutputDirEntry.Hint = "Output Directory Path"
         OutputDirEntry.LeadingIcon = Nothing
-        OutputDirEntry.Location = New Point(22, 155)
-        OutputDirEntry.MaxLength = 50
+        OutputDirEntry.Location = New Point(28, 182)
+        OutputDirEntry.Margin = New Padding(4)
+        OutputDirEntry.MaxLength = 250
         OutputDirEntry.MouseState = MaterialSkin.MouseState.OUT
         OutputDirEntry.Multiline = False
         OutputDirEntry.Name = "OutputDirEntry"
-        OutputDirEntry.Size = New Size(502, 50)
+        OutputDirEntry.Size = New Size(645, 50)
         OutputDirEntry.TabIndex = 10
         OutputDirEntry.Text = ""
         OutputDirEntry.TrailingIcon = Nothing
@@ -159,7 +162,7 @@ Partial Class Form1
         ' 
         HEVCSwitch.AutoSize = True
         HEVCSwitch.Depth = 0
-        HEVCSwitch.Location = New Point(234, 224)
+        HEVCSwitch.Location = New Point(301, 264)
         HEVCSwitch.Margin = New Padding(0)
         HEVCSwitch.MouseLocation = New Point(-1, -1)
         HEVCSwitch.MouseState = MaterialSkin.MouseState.HOVER
@@ -175,7 +178,8 @@ Partial Class Form1
         FocusLabel.AutoSize = True
         FocusLabel.Depth = 0
         FocusLabel.Font = New Font("Roboto", 14.0F, FontStyle.Regular, GraphicsUnit.Pixel)
-        FocusLabel.Location = New Point(544, 296)
+        FocusLabel.Location = New Point(699, 348)
+        FocusLabel.Margin = New Padding(4, 0, 4, 0)
         FocusLabel.MouseState = MaterialSkin.MouseState.HOVER
         FocusLabel.Name = "FocusLabel"
         FocusLabel.Size = New Size(44, 19)
@@ -198,11 +202,12 @@ Partial Class Form1
         QualitySelection.IntegralHeight = False
         QualitySelection.ItemHeight = 43
         QualitySelection.Items.AddRange(New Object() {"Auto", "Low", "Medium", "High"})
-        QualitySelection.Location = New Point(22, 224)
+        QualitySelection.Location = New Point(28, 264)
+        QualitySelection.Margin = New Padding(4)
         QualitySelection.MaxDropDownItems = 4
         QualitySelection.MouseState = MaterialSkin.MouseState.OUT
         QualitySelection.Name = "QualitySelection"
-        QualitySelection.Size = New Size(207, 49)
+        QualitySelection.Size = New Size(265, 49)
         QualitySelection.StartIndex = 0
         QualitySelection.TabIndex = 15
         ' 
@@ -210,18 +215,20 @@ Partial Class Form1
         ' 
         WarningLabel1.Font = New Font("Microsoft YaHei UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         WarningLabel1.ForeColor = Color.DarkGray
-        WarningLabel1.Location = New Point(289, 252)
+        WarningLabel1.Location = New Point(372, 296)
+        WarningLabel1.Margin = New Padding(4, 0, 4, 0)
         WarningLabel1.Name = "WarningLabel1"
-        WarningLabel1.Size = New Size(346, 17)
+        WarningLabel1.Size = New Size(445, 20)
         WarningLabel1.TabIndex = 16
         WarningLabel1.Text = "Not recommended. Some devices may not support HEVC."
         ' 
         ' EstSizeLabel
         ' 
         EstSizeLabel.AutoSize = True
-        EstSizeLabel.Location = New Point(318, 307)
+        EstSizeLabel.Location = New Point(409, 361)
+        EstSizeLabel.Margin = New Padding(4, 0, 4, 0)
         EstSizeLabel.Name = "EstSizeLabel"
-        EstSizeLabel.Size = New Size(99, 17)
+        EstSizeLabel.Size = New Size(122, 20)
         EstSizeLabel.TabIndex = 17
         EstSizeLabel.Text = "Estimated Size: "
         EstSizeLabel.Visible = False
@@ -229,9 +236,10 @@ Partial Class Form1
         ' EstSizeResLabel
         ' 
         EstSizeResLabel.AutoSize = True
-        EstSizeResLabel.Location = New Point(413, 307)
+        EstSizeResLabel.Location = New Point(531, 361)
+        EstSizeResLabel.Margin = New Padding(4, 0, 4, 0)
         EstSizeResLabel.Name = "EstSizeResLabel"
-        EstSizeResLabel.Size = New Size(63, 17)
+        EstSizeResLabel.Size = New Size(77, 20)
         EstSizeResLabel.TabIndex = 18
         EstSizeResLabel.Text = "9999 MiB"
         EstSizeResLabel.TextAlign = ContentAlignment.MiddleRight
@@ -239,9 +247,9 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 17.0F)
+        AutoScaleDimensions = New SizeF(9.0F, 20.0F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(652, 345)
+        ClientSize = New Size(838, 406)
         Controls.Add(EstSizeResLabel)
         Controls.Add(EstSizeLabel)
         Controls.Add(WarningLabel1)
@@ -255,10 +263,10 @@ Partial Class Form1
         Controls.Add(InputPathEntry)
         Controls.Add(FocusLabel)
         HelpButton = True
-        Margin = New Padding(2, 3, 2, 3)
+        Margin = New Padding(3, 4, 3, 4)
         MaximizeBox = False
         Name = "Form1"
-        Padding = New Padding(2, 54, 2, 3)
+        Padding = New Padding(3, 64, 3, 4)
         Sizable = False
         StartPosition = FormStartPosition.CenterScreen
         Text = "Slim Video Compressor"

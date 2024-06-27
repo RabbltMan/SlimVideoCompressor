@@ -34,7 +34,6 @@ if __name__ == '__main__':
     args = parse_arguments()
     i_file_path = os.path.abspath(args.input_file_path)
     o_file_dir = os.path.abspath(args.output_file_dir)
-    print(i_file_path, o_file_dir)
     use_hevc = args.use_hevc
     qos = args.qos
     Compressor(i_file_path, o_file_dir, use_hevc).run(qos)

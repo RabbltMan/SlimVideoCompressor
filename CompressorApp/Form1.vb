@@ -1,4 +1,5 @@
-﻿Imports MaterialSkin
+﻿Imports System.IO
+Imports MaterialSkin
 
 Public Class Form1
 
@@ -20,6 +21,16 @@ Public Class Form1
         EstSizeResLabel.Font = New Font("Microsoft YaHei UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         EstSizeResLabel.ForeColor = Color.DarkSlateGray
         Me.ActiveControl = FocusLabel
+    End Sub
+
+    Private Sub InputPathEntry_OnChange(sender As Object, e As EventArgs) Handles InputPathEntry.TextChanged
+        IsInputPathEntryFilled = True
+        OutputDirEntry.Text = Path.GetDirectoryName(InputFilePath)
+        OutputDirPath = OutputDirEntry.Text
+    End Sub
+
+    Private Sub OutputDirEntry_OnChange(sender As Object, e As EventArgs) Handles OutputDirEntry.TextChanged
+        IsOutputDirEntryFilled = True
     End Sub
 
     Private Sub InputSelectButton_Click(sender As Object, e As EventArgs) Handles InputSelectButton.Click
@@ -55,6 +66,20 @@ Public Class Form1
 
     Private Sub RunButton_Click(sender As Object, e As EventArgs) Handles RunButton.Click
         Me.ActiveControl = FocusLabel
+        Dim CommandArgs As String = "-i """ & InputFilePath & """ -o """ & OutputDirPath & """"
+        If HEVCSwitch.Checked() Then
+            CommandArgs += " --use_hevc"
+        End If
+        CommandArgs += " --qos "
+        Dim QualitySelectionSelectedIndex As Integer = QualitySelection.SelectedIndex
+        Select Case QualitySelectionSelectedIndex
+            Case 1
+                CommandArgs += "0"
+            Case 0, 2
+                CommandArgs += "1"
+            Case 3
+                CommandArgs += "2"
+        End Select
     End Sub
 
     Private Sub HEVCSwitch_CheckedChanged(sender As Object, e As EventArgs) Handles HEVCSwitch.CheckedChanged
