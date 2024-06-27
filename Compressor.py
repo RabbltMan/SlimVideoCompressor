@@ -1,10 +1,18 @@
 import os
+import random
 import re
+import string
 import subprocess
-from time import sleep
+import time
 from typing import Literal
 
 from MediaFileInfo import MediaFileInfo
+
+
+def gen_suffix():
+    timestamp = f"{int(time.time())}"[-2:]
+    random_chars = ''.join(random.choices(string.ascii_letters, k=2))
+    return random.shuffle([timestamp + random_chars])
 
 
 class Compressor:
@@ -39,7 +47,8 @@ class Compressor:
             "output_path": None
         }
         # Apply HEVC Encoder for output video
-        if use_hevc:
+        self.use_hevc = use_hevc
+        if self.use_hevc:
             self.cmd_args["video_codec"] = "libx265"
 
         self.update_path(input_video_path, output_video_dir)
@@ -55,14 +64,13 @@ class Compressor:
         filename, _ = os.path.splitext(os.path.basename(_input_video_path))
 
         if _output_video_dir is None:
-            output_video_path = default_output_dir + f"{filename}_.mp4"
+            output_video_path = default_output_dir + f"{filename}_{gen_suffix()}.mp4"
         else:
-            output_video_path = _output_video_dir + f"{filename}_.mp4"
+            output_video_path = _output_video_dir + f"{filename}_{gen_suffix()}.mp4"
 
         self.cmd_args["input_path"] = _input_video_path
         self.cmd_args["output_path"] = output_video_path
         self.media_file_info: MediaFileInfo = MediaFileInfo(_input_video_path)
-        print(self.media_file_info.__dict__)
 
     def modify_adaptive_args(self, _qos):
         """
@@ -71,27 +79,35 @@ class Compressor:
         # calculate aspect ratio -> output resolution
         act_ratio = self.media_file_info.width / self.media_file_info.height
         COMMON_RATIO = [9 / 16, 3 / 4, 1, 4 / 3, 16 / 9, 21 / 9]
-        if act_ratio < 1:
+        if act_ratio >= 1:
             QOS_MAP = {
-                0: (int(min(360, self.media_file_info.height)), "24"),
+                0: (int(min(360, self.media_file_info.height)), "30"),
                 1: (int(min(480, self.media_file_info.height)), "30"),
                 2: (int(min(720, self.media_file_info.height)), "60")
             }
+            act_h = QOS_MAP[_qos][0]
+            act_w = int(act_h * act_ratio)
         else:
             QOS_MAP = {
-                0: (int(min(360, self.media_file_info.width)), "24"),
+                0: (int(min(360, self.media_file_info.width)), "30"),
                 1: (int(min(480, self.media_file_info.width)), "30"),
                 2: (int(min(720, self.media_file_info.width)), "60")
             }
+            act_w = QOS_MAP[_qos][0]
+            act_h = int(act_w / act_ratio)
         _, act_ratio = sorted([(abs(act_ratio - r), r)
                                for r in COMMON_RATIO])[0]
-        act_w = QOS_MAP[_qos][0]
-        act_h = int(act_w / act_ratio)
+        if act_w % 2 != 0:
+            act_w += 1
+        if act_h % 2 != 0:
+            act_h += 1
         self.cmd_args["video_output_res"] = f"{act_w}x{act_h}"
-        self.cmd_args["r_frame_rate"] = QOS_MAP[_qos][1]
+        self.cmd_args["video_output_fps"] = QOS_MAP[_qos][1]
         # calculate optimized video bit rate
-        opt_bitrate = min(self.media_file_info.bitrate // 2, 200_000,
+        opt_bitrate = min(max(self.media_file_info.bitrate // 2, 200_000),
                           (act_w * act_h * 1.5 * (_qos + 2)))
+        if self.use_hevc:
+            opt_bitrate = opt_bitrate * 0.65
         self.cmd_args["video_output_bitrate"] = f"{opt_bitrate}"
 
     def run(self, qos: Literal[0, 1, 2] = 0):
@@ -122,24 +138,24 @@ class Compressor:
                                stderr=subprocess.PIPE,
                                shell=True,
                                universal_newlines=True)
+
         while True:
             # Read ffmpeg output info in stderr
             line = res.stderr.readline()
             if line:
-                # print(line, end='')
                 # `Lsize=` occur when compression process done
                 if "Lsize=" in line:
-                    sleep(3)
+                    print(100)
+                    time.sleep(3)
                     res.terminate()
-                    print("100")
                     break
                 # calculate progress bar value
                 if "time=" in line:
                     pattern = re.compile(r"time=(\d+):(\d+):(\d+).(\d+)")
-                    l_time = [float(d) for d in pattern.findall(line)[0]]
+                    try:
+                        l_time = [float(d) for d in pattern.findall(line)[0]]
+                    except IndexError:
+                        if "time=N/A" in line:
+                            continue
                     f_time = l_time[0] * 3600 + l_time[1] * 60 + l_time[2]
                     print(f"{f_time * 100 / total_duration:.0f}")
-
-
-if __name__ == "__main__":
-    Compressor("example2.mp4").run()
