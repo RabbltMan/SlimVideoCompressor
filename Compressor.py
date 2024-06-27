@@ -10,9 +10,12 @@ from MediaFileInfo import MediaFileInfo
 
 
 def gen_suffix():
-    timestamp = f"{int(time.time())}"[-2:]
-    random_chars = ''.join(random.choices(string.ascii_letters, k=2))
-    return random.shuffle([timestamp + random_chars])
+    suffix = f"{int(time.time())}"[-2:]
+    suffix += ''.join(random.choices(string.ascii_letters, k=2))
+    suffix = [*suffix]
+    random.shuffle(suffix)
+    suffix = "".join(suffix)
+    return suffix
 
 
 class Compressor:
@@ -64,10 +67,10 @@ class Compressor:
         filename, _ = os.path.splitext(os.path.basename(_input_video_path))
 
         if _output_video_dir is None:
-            output_video_path = default_output_dir + f"{filename}_{gen_suffix()}.mp4"
+            output_video_path = default_output_dir + "\\" + f"{filename}_{gen_suffix()}.mp4"
         else:
-            output_video_path = _output_video_dir + f"{filename}_{gen_suffix()}.mp4"
-
+            output_video_path = _output_video_dir + "\\" + f"{filename}_{gen_suffix()}.mp4"
+        print(_input_video_path, output_video_path)
         self.cmd_args["input_path"] = _input_video_path
         self.cmd_args["output_path"] = output_video_path
         self.media_file_info: MediaFileInfo = MediaFileInfo(_input_video_path)
