@@ -16,9 +16,12 @@ class MediaFileInfo:
         # Float-type stream keywords
         self.F_STREAM_KEYWORDS = ("width", "height", "start_time", "duration",
                                   "bit_rate", "r_frame_rate", "sample_rate")
-        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.current_dir = os.path.abspath("./")
         self.ffprobe_path = os.path.join(self.current_dir, "bin",
                                          "ffprobe.exe")
+        if not os.path.exists(self.ffprobe_path):
+            raise DependencyNotFoundError("ffprobe.exe Not Found")
+        
         self.input_path = input_file_path
         self.width = 0.0
         self.height = 1e-5
@@ -37,9 +40,12 @@ class MediaFileInfo:
             universal_newlines=True)
         streams = []
         stream_info = res.stdout.split('\n')
+        try:
+            assert (stream_info[0] == "[STREAM]"
+                    and stream_info[-2] == "[/STREAM]")
+        except AssertionError:
+            raise UnsupportedInputError("Unsupported Input File")
 
-        assert (stream_info[0] == "[STREAM]"
-                and stream_info[-2] == "[/STREAM]")
         # Stream info parser
         for line in stream_info:
             # upcoming new stream
@@ -77,3 +83,11 @@ class MediaFileInfo:
                         val = float(val)
                     streams[-1][item] = val
         return streams
+
+
+class UnsupportedInputError(Exception):
+    ...
+
+
+class DependencyNotFoundError(Exception):
+    ...

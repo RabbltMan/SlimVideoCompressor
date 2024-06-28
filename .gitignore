@@ -383,3 +383,6 @@ __pycache__/
 
 # Test Files
 *.mp4
+
+# Build
+*.spec

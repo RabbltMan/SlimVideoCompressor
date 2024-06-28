@@ -20,13 +20,14 @@ def gen_suffix():
 
 class Compressor:
 
-    def __init__(self,
-                 input_video_path,
-                 output_video_dir=None,
-                 use_hevc=False):
+    def __init__(self, input_video_path, output_video_dir, use_hevc, logger):
+        self.logger = logger
         self.media_file_info = None
-        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.current_dir = os.path.abspath("./")
         self.ffmpeg_path = os.path.join(self.current_dir, 'bin', 'ffmpeg.exe')
+        if not os.path.exists(self.ffmpeg_path):
+            raise DependencyNotFoundError("ffmpeg.exe Not Found")
+        
         self.cmd_args = {
             "ffmpeg_path": self.ffmpeg_path,
             "OUTPUT_FLAG": "-i",
@@ -65,7 +66,6 @@ class Compressor:
         assert _input_video_path is not None
         default_output_dir = os.path.dirname(_input_video_path)
         filename, _ = os.path.splitext(os.path.basename(_input_video_path))
-
         if _output_video_dir is None:
             output_video_path = default_output_dir + "\\" + f"{filename}_{gen_suffix()}.mp4"
         else:
@@ -147,8 +147,8 @@ class Compressor:
             if line:
                 # `Lsize=` occur when compression process done
                 if "Lsize=" in line:
-                    print(100)
-                    time.sleep(3)
+                    time.sleep(1.5)
+                    print("PROGRESS:100")
                     res.terminate()
                     break
                 # calculate progress bar value
@@ -160,4 +160,8 @@ class Compressor:
                         if "time=N/A" in line:
                             continue
                     f_time = l_time[0] * 3600 + l_time[1] * 60 + l_time[2]
-                    print(f"{f_time * 100 / total_duration:.0f}")
+                    print(f"PROGRESS:{f_time * 100 / total_duration:.0f}")
+
+
+class DependencyNotFoundError(Exception):
+    ...
