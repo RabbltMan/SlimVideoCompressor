@@ -7,7 +7,7 @@ class MediaFileInfo:
     A class retrieves information from the input media file using ffprobe.
     """
 
-    def __init__(self, input_file_path: str):
+    def __init__(self, input_file_path: str, logger):
         # String-type stream keywords
         self.S_STREAM_KEYWORDS = (
             "codec_name",
@@ -16,9 +16,13 @@ class MediaFileInfo:
         # Float-type stream keywords
         self.F_STREAM_KEYWORDS = ("width", "height", "start_time", "duration",
                                   "bit_rate", "r_frame_rate", "sample_rate")
-        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.logger = logger
+        self.current_dir = os.path.abspath("./")
         self.ffprobe_path = os.path.join(self.current_dir, "bin",
                                          "ffprobe.exe")
+        if not os.path.exists(self.ffprobe_path):
+            raise DependencyNotFoundError("ffprobe.exe Not Found")
+        
         self.input_path = input_file_path
         self.width = 0.0
         self.height = 1e-5
@@ -26,6 +30,7 @@ class MediaFileInfo:
         self.bitrate = 0
         self.has_audio_stream = False
         self.has_video_stream = False
+        self.audio_stream_count = 0
         self.streams = self.get_stream_info()
 
     def get_stream_info(self):
@@ -37,9 +42,13 @@ class MediaFileInfo:
             universal_newlines=True)
         streams = []
         stream_info = res.stdout.split('\n')
+        self.logger.debug(f"\n\t{'\n\t'.join(stream_info)}")
+        try:
+            assert (stream_info[0] == "[STREAM]"
+                    and stream_info[-2] == "[/STREAM]")
+        except AssertionError:
+            raise UnsupportedInputError("Unsupported Input File")
 
-        assert (stream_info[0] == "[STREAM]"
-                and stream_info[-2] == "[/STREAM]")
         # Stream info parser
         for line in stream_info:
             # upcoming new stream
@@ -59,6 +68,7 @@ class MediaFileInfo:
                     self.bitrate = max(streams[-1]["bit_rate"], self.bitrate)
                 elif streams[-1]["codec_type"] == "audio":
                     self.has_audio_stream = True
+                    self.audio_stream_count += 1
 
             # properties of current stream
             if "=" in line:
@@ -77,3 +87,11 @@ class MediaFileInfo:
                         val = float(val)
                     streams[-1][item] = val
         return streams
+
+
+class UnsupportedInputError(Exception):
+    ...
+
+
+class DependencyNotFoundError(Exception):
+    ...
