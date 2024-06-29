@@ -36,20 +36,24 @@ def parse_arguments():
     return _args
 
 
+log_dir = os.path.abspath("./logs/")
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s |%(levelname)s| %(module)s:%(lineno)d > %(message)s",
+    filename=os.path.join(log_dir, f"log_{int(time.time())}.log"),
+    filemode="w")
+logger = logging.getLogger("compressor_app")
+system_info = f"Running on: {platform.system()} Version {platform.version()}"
+logger.info(system_info)
+
 args = parse_arguments()
 i_file_path = os.path.abspath(args.input_file_path)
 o_file_dir = os.path.abspath(args.output_file_dir)
 use_hevc = args.use_hevc
 qos = args.qos
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s |%(levelname)s| %(module)s:%(lineno)d > %(message)s",
-    filename=f"log_{int(time.time())}.log",
-    filemode="w")
-logger = logging.getLogger("compressor_app")
-system_info = f"Running on: {platform.system()} Version {platform.version()}"
-logger.info(system_info)
 
 try:
     Compressor.Compressor(i_file_path, o_file_dir, use_hevc, logger).run(qos)
@@ -72,6 +76,11 @@ except MediaFileInfo.DependencyNotFoundError:
 except Compressor.DependencyNotFoundError:
     logger.error("Dependency ffmpeg.exe nod found!")
     print("ERROR:FFMPEG_NOT_EXIST")
+    logger.error(traceback.format_exc())
+
+except Compressor.NoStreamError:
+    logger.error("No stream detected in input file!")
+    print("ERROR:NO_STREAM")
     logger.error(traceback.format_exc())
 
 except Exception:
