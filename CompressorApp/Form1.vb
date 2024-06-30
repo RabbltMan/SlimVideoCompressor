@@ -80,6 +80,10 @@ Public Class Form1
             Case 3
                 CommandArgs += "2"
         End Select
+
+        Me.Hide()
+        Form2.Show()
+
     End Sub
 
     Private Sub HEVCSwitch_CheckedChanged(sender As Object, e As EventArgs) Handles HEVCSwitch.CheckedChanged

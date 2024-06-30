@@ -124,7 +124,7 @@ Partial Class Form1
         InputPathEntry.BorderStyle = BorderStyle.None
         InputPathEntry.Depth = 0
         InputPathEntry.Enabled = False
-        InputPathEntry.Font = New Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel)
+        InputPathEntry.Font = New Font("Roboto", 16.0F, FontStyle.Regular, GraphicsUnit.Pixel)
         InputPathEntry.Hint = "Input File Path"
         InputPathEntry.LeadingIcon = Nothing
         InputPathEntry.Location = New Point(22, 88)
@@ -143,7 +143,7 @@ Partial Class Form1
         OutputDirEntry.BorderStyle = BorderStyle.None
         OutputDirEntry.Depth = 0
         OutputDirEntry.Enabled = False
-        OutputDirEntry.Font = New Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel)
+        OutputDirEntry.Font = New Font("Roboto", 16.0F, FontStyle.Regular, GraphicsUnit.Pixel)
         OutputDirEntry.Hint = "Output Directory Path"
         OutputDirEntry.LeadingIcon = Nothing
         OutputDirEntry.Location = New Point(22, 155)
@@ -175,7 +175,7 @@ Partial Class Form1
         ' 
         FocusLabel.AutoSize = True
         FocusLabel.Depth = 0
-        FocusLabel.Font = New Font("Roboto", 14F, FontStyle.Regular, GraphicsUnit.Pixel)
+        FocusLabel.Font = New Font("Roboto", 14.0F, FontStyle.Regular, GraphicsUnit.Pixel)
         FocusLabel.Location = New Point(544, 296)
         FocusLabel.MouseState = MaterialSkin.MouseState.HOVER
         FocusLabel.Name = "FocusLabel"
@@ -192,7 +192,7 @@ Partial Class Form1
         QualitySelection.DropDownHeight = 174
         QualitySelection.DropDownStyle = ComboBoxStyle.DropDownList
         QualitySelection.DropDownWidth = 121
-        QualitySelection.Font = New Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Pixel)
+        QualitySelection.Font = New Font("Microsoft Sans Serif", 14.0F, FontStyle.Bold, GraphicsUnit.Pixel)
         QualitySelection.ForeColor = Color.FromArgb(CByte(222), CByte(0), CByte(0), CByte(0))
         QualitySelection.FormattingEnabled = True
         QualitySelection.Hint = "Compression Level"
@@ -209,7 +209,7 @@ Partial Class Form1
         ' 
         ' WarningLabel1
         ' 
-        WarningLabel1.Font = New Font("Microsoft YaHei UI", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        WarningLabel1.Font = New Font("Microsoft YaHei UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         WarningLabel1.ForeColor = Color.DarkGray
         WarningLabel1.Location = New Point(289, 252)
         WarningLabel1.Name = "WarningLabel1"
@@ -240,7 +240,7 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7F, 17F)
+        AutoScaleDimensions = New SizeF(7.0F, 17.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(652, 345)
         Controls.Add(EstSizeResLabel)
